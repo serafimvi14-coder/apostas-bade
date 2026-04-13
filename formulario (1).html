@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Bade — Registro de Apostas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0d0f14;
+    --bg2:      #13161d;
+    --bg3:      #1a1e28;
+    --border:   rgba(255,255,255,0.07);
+    --border2:  rgba(255,255,255,0.13);
+    --text:     #e8eaf0;
+    --muted:    #6b7280;
+    --accent:   #4ade80;
+    --accent2:  #22c55e;
+    --danger:   #f87171;
+    --warn:     #fbbf24;
+    --blue:     #60a5fa;
+    --radius:   14px;
+    --font:     'Syne', sans-serif;
+    --mono:     'DM Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+  }
+  .header-logo span { color: var(--text); }
+  .header-badge {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  /* ── Container ── */
+  .container { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+
+  /* ── Section title ── */
+  .section-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 24px 0 10px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+
+  /* ── Form elements ── */
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-size: 15px;
+    font-family: var(--font);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--muted);
+    opacity: .6;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  select option { background: var(--bg3); }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { margin-bottom: 12px; }
+  .field:last-child { margin-bottom: 0; }
+
+  /* ── Esporte pills ── */
+  .sport-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 0;
+  }
+  .sport-pill {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .sport-pill.active {
+    border-color: var(--accent);
+    background: rgba(74,222,128,.08);
+  }
+  .sport-pill svg { width: 20px; height: 20px; }
+  .sport-pill-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .sport-pill.active .sport-pill-label { color: var(--accent); }
+
+  /* ── Preview card ── */
+  .preview {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: 10px;
+    display: none;
+  }
+  .preview.visible { display: block; }
+  .preview-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .preview-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .preview-row:last-child { border-bottom: none; }
+  .preview-key { color: var(--muted); }
+  .preview-val { font-family: var(--mono); font-size: 13px; color: var(--text); text-align: right; max-width: 60%; }
+  .preview-val.accent { color: var(--accent); }
+  .retorno-val { font-size: 18px; font-weight: 700; color: var(--accent); font-family: var(--mono); }
+
+  /* ── Status bar ── */
+  .status-bar {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    transition: all .2s;
+  }
+  .status-bar.conectado { border-color: rgba(74,222,128,.3); color: var(--accent); }
+  .status-bar.erro { border-color: rgba(248,113,113,.3); color: var(--danger); }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+  .status-bar.conectado .status-dot { background: var(--accent); }
+  .status-bar.erro .status-dot { background: var(--danger); }
+
+  /* ── Submit btn ── */
+  .btn-submit {
+    width: 100%;
+    background: var(--accent);
+    color: #0a0f0a;
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: var(--font);
+    letter-spacing: .02em;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .btn-submit:active { transform: scale(.98); background: var(--accent2); }
+  .btn-submit:disabled { opacity: .5; pointer-events: none; }
+  .btn-submit .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(0,0,0,.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    display: none;
+  }
+  .btn-submit.loading .spinner { display: block; }
+  .btn-submit.loading .btn-text { display: none; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: rgba(74,222,128,.4); color: var(--accent); }
+  .toast.error   { border-color: rgba(248,113,113,.4); color: var(--danger); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Textarea ── */
+  textarea { resize: none; height: 72px; font-size: 14px; line-height: 1.5; }
+
+  /* ── Odd / linha highlight ── */
+  #odd, #linha { font-family: var(--mono); font-size: 16px; letter-spacing: .04em; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">Bade<span>Bets</span></div>
+  <div class="header-badge" id="conn-badge">● conectando</div>
+</div>
+
+<div class="container">
+
+  <!-- STATUS -->
+  <div class="status-bar" id="status-bar">
+    <div class="status-dot"></div>
+    <span id="status-text">Verificando conexão com a planilha…</span>
+  </div>
+
+  <!-- CLIENTE -->
+  <div class="section-title">Cliente</div>
+  <div class="card">
+    <div class="field">
+      <label>Selecionar cliente</label>
+      <select id="cliente-select" onchange="onClienteChange()">
+        <option value="">Carregando…</option>
+      </select>
+    </div>
+    <div class="field" id="novo-cliente-field" style="display:none;">
+      <label>Nome do novo cliente</label>
+      <input type="text" id="novo-cliente-input" placeholder="Ex: Pedro Anderton">
+    </div>
+  </div>
+
+  <!-- ESPORTE -->
+  <div class="section-title">Esporte</div>
+  <div class="card">
+    <div class="sport-grid" id="sport-grid">
+      <div class="sport-pill active" data-sport="Futebol" onclick="selectSport(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+        <span class="sport-pill-label">Futebol</span>
+      </div>
+      <div class="sport-pill" data-sport="Basquete" onclick="selectSport(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93a10 10 0 0 1 14.14 0M4.93 19.07a10 10 0 0 0 14.14 0"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+        <span class="sport-pill-label">NBA / Basquete</span>
+      </div>
+      <div class="sport-pill" data-sport="E-sports" onclick="selectSport(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4M15 12h2M15 10h2"/></svg>
+        <span class="sport-pill-label">E-sports</span>
+      </div>
+      <div class="sport-pill" data-sport="Outro" onclick="selectSport(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <span class="sport-pill-label">Outro</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- APOSTA -->
+  <div class="section-title">Detalhes da aposta</div>
+  <div class="card">
+    <div class="field">
+      <label>Confronto</label>
+      <input type="text" id="confronto" placeholder="Ex: Flamengo vs Palmeiras" oninput="updatePreview()">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Mercado</label>
+        <select id="mercado" onchange="updatePreview()">
+          <option>Handicap</option>
+          <option>Over/Under</option>
+          <option>1X2</option>
+          <option>Ambas marcam</option>
+          <option>Escanteios</option>
+          <option>Cartões</option>
+          <option>Placar exato</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Linha</label>
+        <input type="text" id="linha" placeholder="Ex: -11.5" oninput="updatePreview()">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Odd confirmada</label>
+        <input type="number" id="odd" step="0.01" min="1" placeholder="1.83" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label>Valor (R$)</label>
+        <input type="number" id="valor" step="0.01" min="0" placeholder="100" oninput="updatePreview()">
+      </div>
+    </div>
+    <div class="field">
+      <label>Observação (opcional)</label>
+      <textarea id="observacao" placeholder="Ex: Linha mudou de -11.5 para -10.5 conforme negociação…"></textarea>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview" id="preview">
+    <div class="preview-label">Resumo da aposta</div>
+    <div class="preview-row">
+      <span class="preview-key">Cliente</span>
+      <span class="preview-val" id="pv-cliente">—</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Confronto</span>
+      <span class="preview-val" id="pv-confronto">—</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Mercado / Linha</span>
+      <span class="preview-val accent" id="pv-mercado">—</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Odd</span>
+      <span class="preview-val accent" id="pv-odd">—</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Apostado</span>
+      <span class="preview-val" id="pv-valor">—</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">Retorno potencial</span>
+      <span class="retorno-val" id="pv-retorno">—</span>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div style="margin-top:16px;">
+    <button class="btn-submit" id="btn-submit" onclick="registrar()">
+      <span class="btn-text">Registrar aposta</span>
+      <div class="spinner"></div>
+    </button>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  ⚠️  SUBSTITUA PELA URL DO SEU APPS SCRIPT
+// ─────────────────────────────────────────────
+const API_URL = 'https://script.google.com/macros/s/AKfycbyxFOsXhdWNfFYg50dEbie7AC6wmsSpj80TKrHJ-iRW5zckfyb0XwpuqbRAeY0SiBX5/exec';
+
+let esporteSelecionado = 'Futebol';
+const mercadosPorEsporte = {
+  'Futebol':   ['Handicap','Over/Under','1X2','Ambas marcam','Escanteios Asiáticos','Escanteios','Cartões','Placar exato','BTTS + Over'],
+  'Basquete':  ['Handicap','Over/Under','Props — Pontos','Props — Rebotes','Props — Assistências','Props — Cestas de 3','Props — Roubos','Props — Bloqueios'],
+  'E-sports':  ['Handicap Mapas','Over/Under Kills','Over/Under Dragões','Over/Under Torres','Over/Under Barões','Primeiro Sangue','Resultado'],
+  'Outro':     ['Handicap','Over/Under','Resultado','Moneyline','Outro'],
+};
+
+// ── Selecionar esporte ──
+function selectSport(el) {
+  document.querySelectorAll('.sport-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  esporteSelecionado = el.dataset.sport;
+  atualizarMercados();
+  updatePreview();
+}
+
+function atualizarMercados() {
+  const sel = document.getElementById('mercado');
+  const opts = mercadosPorEsporte[esporteSelecionado] || mercadosPorEsporte['Outro'];
+  sel.innerHTML = opts.map(o => `<option>${o}</option>`).join('');
+}
+
+// ── Cliente ──
+function onClienteChange() {
+  const v = document.getElementById('cliente-select').value;
+  document.getElementById('novo-cliente-field').style.display = v === '__novo' ? 'block' : 'none';
+  updatePreview();
+}
+
+function getCliente() {
+  const sel = document.getElementById('cliente-select').value;
+  if (sel === '__novo') return document.getElementById('novo-cliente-input').value.trim();
+  return sel;
+}
+
+// ── Preview ──
+function updatePreview() {
+  const confronto = document.getElementById('confronto').value.trim();
+  const mercado   = document.getElementById('mercado').value;
+  const linha     = document.getElementById('linha').value.trim();
+  const odd       = parseFloat(document.getElementById('odd').value);
+  const valor     = parseFloat(document.getElementById('valor').value);
+  const cliente   = getCliente();
+
+  const preview = document.getElementById('preview');
+  if (!confronto && !odd) { preview.classList.remove('visible'); return; }
+  preview.classList.add('visible');
+
+  document.getElementById('pv-cliente').textContent   = cliente || '—';
+  document.getElementById('pv-confronto').textContent = confronto || '—';
+  document.getElementById('pv-mercado').textContent   = linha ? `${mercado} ${linha}` : mercado;
+  document.getElementById('pv-odd').textContent       = odd ? `@${odd.toFixed(2)}` : '—';
+  document.getElementById('pv-valor').textContent     = valor ? `R$ ${valor.toFixed(2)}` : '—';
+
+  if (odd > 0 && valor > 0) {
+    const retorno = (odd * valor).toFixed(2);
+    document.getElementById('pv-retorno').textContent = `R$ ${retorno}`;
+  } else {
+    document.getElementById('pv-retorno').textContent = '—';
+  }
+}
+
+// ── Registrar ──
+async function registrar() {
+  const cliente   = getCliente();
+  const confronto = document.getElementById('confronto').value.trim();
+  const mercado   = document.getElementById('mercado').value;
+  const linha     = document.getElementById('linha').value.trim();
+  const odd       = document.getElementById('odd').value;
+  const valor     = document.getElementById('valor').value;
+  const obs       = document.getElementById('observacao').value.trim();
+
+  if (!cliente)   return toast('Selecione ou informe o cliente', 'error');
+  if (!confronto) return toast('Informe o confronto', 'error');
+  if (!odd)       return toast('Informe a odd confirmada', 'error');
+  if (!valor)     return toast('Informe o valor apostado', 'error');
+
+  const btn = document.getElementById('btn-submit');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        acao: 'registrar',
+        cliente, esporte: esporteSelecionado,
+        confronto, mercado, linha, odd, valor,
+        observacao: obs
+      })
+    });
+    const data = await resp.json();
+
+    if (data.sucesso) {
+      toast(`✅ ${data.id} registrado!`, 'success');
+      limparForm();
+    } else {
+      toast(data.erro || 'Erro ao registrar', 'error');
+    }
+  } catch (err) {
+    toast('Erro de conexão com a planilha', 'error');
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// ── Limpar formulário ──
+function limparForm() {
+  document.getElementById('confronto').value    = '';
+  document.getElementById('linha').value        = '';
+  document.getElementById('odd').value          = '';
+  document.getElementById('valor').value        = '';
+  document.getElementById('observacao').value   = '';
+  document.getElementById('preview').classList.remove('visible');
+}
+
+// ── Toast ──
+function toast(msg, tipo = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = `toast ${tipo}`;
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── Carregar clientes ──
+async function carregarClientes() {
+  const sel = document.getElementById('cliente-select');
+  const badge = document.getElementById('conn-badge');
+  const bar   = document.getElementById('status-bar');
+  const stxt  = document.getElementById('status-text');
+
+  if (API_URL === 'URL_DO_SEU_APPS_SCRIPT') {
+    sel.innerHTML = '<option value="">⚠️ Configure a URL do Apps Script</option>';
+    bar.className  = 'status-bar erro';
+    stxt.textContent = 'URL não configurada — siga o LEIA-ME.txt';
+    badge.textContent = '● offline';
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${API_URL}?acao=clientes`);
+    const data = await resp.json();
+
+    const clientes = data.clientes || [];
+    sel.innerHTML  = '<option value="">Selecione…</option>';
+    clientes.forEach(c => {
+      const opt   = document.createElement('option');
+      opt.value   = c;
+      opt.textContent = c;
+      sel.appendChild(opt);
+    });
+    const novo = document.createElement('option');
+    novo.value       = '__novo';
+    novo.textContent = '+ Novo cliente';
+    sel.appendChild(novo);
+
+    bar.className    = 'status-bar conectado';
+    stxt.textContent = `Planilha conectada — ${clientes.length} cliente(s)`;
+    badge.textContent = '● online';
+    badge.style.color = '#4ade80';
+  } catch (err) {
+    bar.className    = 'status-bar erro';
+    stxt.textContent = 'Erro ao conectar com a planilha';
+    badge.textContent = '● offline';
+    sel.innerHTML    = '<option value="">Erro de conexão</option>';
+  }
+}
+
+// ── Init ──
+carregarClientes();
+atualizarMercados();
+</script>
+</body>
+</html>
